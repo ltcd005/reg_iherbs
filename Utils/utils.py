@@ -123,3 +123,6 @@ def read_file_helper(file_path):
     data = [line.strip() for line in f.readlines()]
     f.close()
     return data
+
+def get_cvv(card_number):
+    return "1111" if card_number[0] == "3" else "111"
