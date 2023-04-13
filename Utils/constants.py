@@ -14,6 +14,10 @@ IMAP_DICT = {
 }
 
 # PATH
+NAME_PATH = "./Data/Name"
+
+
+
 CONFIG_PATH = "config.json"
 FUNCAPTCHA_CROWD_OF_PEOPLE_AUDIO_PATH = "./Data/Weight/Funcaptcha_Audio/CROWD_OF_PEOPLE_AUDIO.pth"
 FUNCAPTHCA_GALAXY_IMAGE_PATH = "./Data/Weight/Funcaptcha_Image/GALAXY.h5"
@@ -22,6 +26,15 @@ TEMP_AUDIO_PATH = "./Data/Temp_Audio"
 TEMP_IMAGE_PATH = "./Data/Temp_Image"
 TEXTNOW_PATH = "./Data/Textnow"
 HOTMAIL_PATH = "./Data/Hotmail"
+
+
+
+
+
+
+
+
+
 
 
 # AMAZON
