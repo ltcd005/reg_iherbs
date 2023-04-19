@@ -1,7 +1,7 @@
 import requests
 import threading
 import time
-from Helpers import check_proxy
+from Utils.utils import check_proxy
 
 with open('./Data/shoplikeproxy_key.txt', 'r') as f:
     keys = f.read().strip().split('\n')
@@ -41,7 +41,7 @@ def get_with_check(key,new=False):
         proxy = get(key,new)
         if isinstance(proxy, bool):
             return proxy
-        if check_proxy.check(proxy):
+        if check_proxy(proxy):
             return proxy
         print('[ERORR] proxy can be used, trying to get new proxy')
         time.sleep(7)

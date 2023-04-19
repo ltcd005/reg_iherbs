@@ -1,7 +1,7 @@
 import threading
 import requests
 import time
-from Helpers import check_proxy
+from Utils.utils import check_proxy
 
 with open('./Data/tmproxy_key.txt', 'r') as f:
     tm_keys = f.read().strip().split('\n')

@@ -29,7 +29,7 @@ class MultiLogin:
                     "port": proxy["port"], 
                 } 
             }
-            if proxy["username"] != None:
+            if proxy["username"] != "":
                 raw_payload["network"]["proxy"]["username"] = proxy["username"]
                 raw_payload["network"]["proxy"]["password"] = proxy["password"]
              
