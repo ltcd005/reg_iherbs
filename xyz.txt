@@ -1,0 +1,3 @@
+requests
+pytest-playwright
+selenium==3.14

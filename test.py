@@ -18,7 +18,7 @@ PROXIES_SITE = ["luna","shoplike","tmproxy"]
 BROWSER_APPS = ["gologin","multilogin"]
 
 
-def select_browser_apps(browser_app,proxy_dict):
+def select_browser_apps(index,browser_app,proxy_dict):
     if browser_app == "multilogin":
         br = multilogin.MultiLogin()
         br.create_profile(proxy=proxy_dict)
@@ -26,6 +26,7 @@ def select_browser_apps(browser_app,proxy_dict):
     elif browser_app == "gologin":
         br = gologin.GoLogin({
             "token": GOLOGIN_TOKEN,
+            "port": 3500 + index
         })
         profile_id = br.createStdProfile(proxy_dict)
         print("profile_id :",profile_id)
@@ -34,9 +35,10 @@ def select_browser_apps(browser_app,proxy_dict):
             for _ in range(5):
                 try:
                     debugger_address = br.start()
+                    print("debugger_address: ",debugger_address)
                     break
-                except:
-                    pass
+                except Exception as e:
+                    print("Gologin Error: ",e)
             cdp_link = "http://" + debugger_address
 
     return br,cdp_link
@@ -52,7 +54,7 @@ def stop_and_delete_browser_apps(br,browser_app):
         pass
 
 
-def run(proxy_site,browser_app):
+def run(index,proxy_site,browser_app):
     if proxy_site == "shoplike" or proxy_site == "tmproxy":
         proxy_key = shoplike_proxy.get_key() if proxy_site == "shoplike" else tm_proxy.get_key()
     else:
@@ -63,8 +65,9 @@ def run(proxy_site,browser_app):
         proxy_dict = proxy_manager.get_proxy(proxy_site=proxy_site,key=proxy_key,browser_app=browser_app)
         with sync_playwright() as plwt:
             try:
-                br,cdp_link = select_browser_apps(browser_app=browser_app,proxy_dict=proxy_dict)
+                br,cdp_link = select_browser_apps(index,browser_app=browser_app,proxy_dict=proxy_dict)
                 debugger_address = cdp_link.split('http://')[-1]
+                #print(debugger_address)
                 browser = plwt.chromium.connect_over_cdp(cdp_link)
                 context = browser.contexts[0]
                 page = context.pages[0]
@@ -91,7 +94,10 @@ def run(proxy_site,browser_app):
                         driver.close()
                     except:
                         pass
-                stop_and_delete_browser_apps(br,browser_app)
+                try:
+                    stop_and_delete_browser_apps(br,browser_app)
+                except:
+                    pass
 
 if __name__ == '__main__':
     n_thread = int(input('Enter number of thread: '))
@@ -103,13 +109,14 @@ if __name__ == '__main__':
     browser_app = BROWSER_APPS[browser_index - 1]
 
     threads = []
-    for _ in range(n_thread):
-        thread = threading.Thread(target=run,args=(proxy_site,browser_app))
+    for index in range(n_thread):
+        thread = threading.Thread(target=run,args=(index,proxy_site,browser_app))
         threads.append(thread)
     for thread in threads:
         thread.setDaemon(True)
     for thread in threads:
         thread.start()
+        sleep(1)
     for thread in threads:
         thread.join()
     input('Enter <ENTER> to exit.')

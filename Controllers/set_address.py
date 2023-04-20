@@ -49,10 +49,11 @@ def run(page,state):
         except:
             pass
         try:
-            if playwright.wait_for_url_helper(page,"scd?correlationId=",30):
+            if playwright.wait_for_url_helper(page,"scd?correlationId=",1):
                 return True,state
         except:
             pass
     return False,state
     # correlationId
+
 
