@@ -55,7 +55,8 @@ def run(page,state):
             password = gen_info.get_password()
             state["email"] = email
             state["password"] = password
-            for _ in range(2):
+            for _ in range(3):
+                
                 result = create_account(page,email,password)
                 print("Result: ",result)
                 if result == "Success":
@@ -65,6 +66,7 @@ def run(page,state):
                 elif result == "Captcha failed":
                     page.reload()
                     page.wait_for_selector('#username_input', state='visible',timeout=30000)
+                    page.wait_for_timeout(randint(2,5)*1000)
             return False,state
         except Exception as e:
             print("Register Error: ",e)

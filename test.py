@@ -7,14 +7,14 @@ import threading
 from Services import mobiehop_proxy,shifter_proxy,shoplike_proxy,tinsoft_proxy,tm_proxy,lunaproxy
 from Controllers import register,set_address
 from Helpers import gologin
-
+from Controllers import init_driver,check_status
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 GOLOGIN_TOKEN = read_file_helper("./Data/gologin_token.txt")[0]
 
 
-PROXIES_SITE = ["luna","shoplike","tmproxy"]
+PROXIES_SITE = ["luna","shoplike","tmproxy","socks5"]
 BROWSER_APPS = ["gologin","multilogin"]
 
 
@@ -54,7 +54,10 @@ def stop_and_delete_browser_apps(br,browser_app):
         pass
 
 
-def run(index,proxy_site,browser_app):
+def run(index,options):
+    proxy_site = options.get('proxy_site')
+    browser_app = options.get('browser_app')
+    is_add_address = options.get('is_add_address')
     if proxy_site == "shoplike" or proxy_site == "tmproxy":
         proxy_key = shoplike_proxy.get_key() if proxy_site == "shoplike" else tm_proxy.get_key()
     else:
@@ -74,12 +77,15 @@ def run(index,proxy_site,browser_app):
                 #page.wait_for_timeout(5000)
                 is_register,state = register.run(page,state)
                 if is_register:
-                    is_set_address,state = set_address.run(page,state)
-                    if is_set_address:
-                        print(state)
-                        write_file_helper(f"Account_REGISTERED.txt",f"{state['email']}|{state['password']}|{state['full_name']}|{state['address']}|{state['phone_number']}")
+                    if is_add_address:
+                        is_set_address,state = set_address.run(page,state)
+                        if is_set_address:
+                            write_file_helper(f"Account_REGISTERED.txt",f"{state['email']}|{state['password']}|{state['full_name']}|{state['address']}|{state['phone_number']}")
+                        else:
+                            write_file_helper(f"Account_REGISTERED.txt",f"{state['email']}|{state['password']}")
                     else:
                         write_file_helper(f"Account_REGISTERED.txt",f"{state['email']}|{state['password']}")
+                    print(state)
                 browser.close()
                 
             except Exception as e:
@@ -101,16 +107,19 @@ def run(index,proxy_site,browser_app):
 
 if __name__ == '__main__':
     n_thread = int(input('Enter number of thread: '))
-    print("Proxy Site: [1] -> 'lunaproxy', [2] -> 'shoplikeproxy', [3] -> 'tmproxy'")
+    print("Proxy Site: [1] -> 'lunaproxy', [2] -> 'shoplikeproxy', [3] -> 'tmproxy', [4] -> 'socks5'")
     proxy_index = int(input('Enter number to select proxy site: '))
     proxy_site = PROXIES_SITE[proxy_index - 1]
     print("Browser App: [1] -> 'Gologin', [2] -> 'Multilogin'")
     browser_index = int(input('Enter number to select browser app: '))
     browser_app = BROWSER_APPS[browser_index - 1]
+    print("Add Address: [1] -> 'No', [2] -> 'Yes'")
+    is_add_address = int(input('Enter number to add address: ')) == 2
+    options = {"browser_index": browser_index,"browser_app": browser_app,"is_add_address": is_add_address,"proxy_site": proxy_site}
 
     threads = []
     for index in range(n_thread):
-        thread = threading.Thread(target=run,args=(index,proxy_site,browser_app))
+        thread = threading.Thread(target=run,args=(index,options))
         threads.append(thread)
     for thread in threads:
         thread.setDaemon(True)

@@ -49,7 +49,8 @@ def run(page,state):
         except:
             pass
         try:
-            if playwright.wait_for_url_helper(page,"scd?correlationId=",1):
+            #if playwright.wait_for_url_helper(page,"scd?correlationId=",1):
+            if playwright.wait_for_url_helper(page,"com/scd",1):
                 return True,state
         except:
             pass

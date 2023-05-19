@@ -9,7 +9,7 @@ from Models import proxy_manager
 from Utils.utils import *
 
 
-proxy_dict = proxy_manager.get_proxy()
+proxy_dict = None #proxy_manager.get_proxy()
 with sync_playwright() as plwt:
     state = {}
     try:

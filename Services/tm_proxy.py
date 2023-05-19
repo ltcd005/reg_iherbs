@@ -18,11 +18,11 @@ def get_key():
     tm_locker.release()
     return key
 
-def get_proxy_with_check(key):
+def get_with_check(key):
     print('run get proxy')
     while True:
         proxy = get_proxy(key)
-        if check_proxy.check(proxy):
+        if check_proxy(proxy):
             return proxy
         time.sleep(6)
 
@@ -47,6 +47,4 @@ def get_proxy(key):
             proxy = response.json()['data']['https']
             return proxy
         # save log
-        with open('./Log/ips.txt', 'a') as f:
-            f.write(f"{proxy.split(':')[0]}\n")
         return proxy
